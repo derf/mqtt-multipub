@@ -1,0 +1,75 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use 5.020;
+
+our $VERSION = '0.00';
+
+use File::Slurp qw(read_file);
+use Net::MQTT::Simple;
+
+my $mqtt = Net::MQTT::Simple->new( '172.23.225.193' );
+
+sub parse_content_string {
+	my ($raw_content) = @_;
+	if ($raw_content =~ m{ ^ / [^/] }x) {
+		my $content = read_file($raw_content);
+		chomp $content;
+		return $content;
+	}
+	return $raw_content;
+}
+
+for my $arg (@ARGV) {
+	if ($arg =~ m{ ^ (?<topic> [^=]+) = (?<msgtype> . ) = (?<content> .*) $ }x) {
+		my $content = parse_content_string($+{content});
+		if ($+{msgtype} eq 'm') {
+			$mqtt->publish( $+{topic}, $content );
+		}
+		elsif ($+{msgtype} eq 'r') {
+			$mqtt->retain( $+{topic}, $content );
+		}
+		else {
+			warn "Unsupported message type $+{msgtype} ($arg)\n";
+		}
+	}
+}
+
+__END__
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head1 VERSION
+
+=head1 DESCRIPTION
+
+=head1 OPTIONS
+
+=over
+
+=back
+
+=head1 EXIT STATUS
+
+=head1 CONFIGURATION
+
+None.
+
+=head1 DEPENDENCIES
+
+=over
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+=head1 AUTHOR
+
+Copyright (C) 2017 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+
+=head1 LICENSE
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.
