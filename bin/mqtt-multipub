@@ -9,13 +9,13 @@ our $VERSION = '0.00';
 use File::Slurp qw(read_file);
 use Net::MQTT::Simple;
 
-my $mqtt = Net::MQTT::Simple->new( '172.23.225.193' );
+my $mqtt = Net::MQTT::Simple->new('172.23.225.193');
 
 sub parse_content_string {
 	my ($raw_content) = @_;
-	if ($raw_content =~ m{ ^ / [^/] }x) {
-		my $content = read_file($raw_content, { err_mode => 'carp' });
-		if (defined $content) {
+	if ( $raw_content =~ m{ ^ / [^/] }x ) {
+		my $content = read_file( $raw_content, { err_mode => 'carp' } );
+		if ( defined $content ) {
 			chomp $content;
 		}
 		return $content;
@@ -24,12 +24,14 @@ sub parse_content_string {
 }
 
 for my $arg (@ARGV) {
-	if ($arg =~ m{ ^ (?<topic> [^=]+) = (?<msgtype> . ) = (?<content> .*) $ }x) {
-		my $content = parse_content_string($+{content});
-		if ($+{msgtype} eq 'm') {
+	if (
+		$arg =~ m{ ^ (?<topic> [^=]+) = (?<msgtype> . ) = (?<content> .*) $ }x )
+	{
+		my $content = parse_content_string( $+{content} );
+		if ( $+{msgtype} eq 'm' ) {
 			$mqtt->publish( $+{topic}, $content );
 		}
-		elsif ($+{msgtype} eq 'r') {
+		elsif ( $+{msgtype} eq 'r' ) {
 			$mqtt->retain( $+{topic}, $content );
 		}
 		else {
