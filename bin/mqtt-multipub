@@ -14,8 +14,10 @@ my $mqtt = Net::MQTT::Simple->new( '172.23.225.193' );
 sub parse_content_string {
 	my ($raw_content) = @_;
 	if ($raw_content =~ m{ ^ / [^/] }x) {
-		my $content = read_file($raw_content);
-		chomp $content;
+		my $content = read_file($raw_content, { err_mode => 'carp' });
+		if (defined $content) {
+			chomp $content;
+		}
 		return $content;
 	}
 	return $raw_content;
