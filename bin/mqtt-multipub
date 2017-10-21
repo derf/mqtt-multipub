@@ -9,7 +9,8 @@ our $VERSION = '0.00';
 use File::Slurp qw(read_file);
 use Net::MQTT::Simple;
 
-my $mqtt = Net::MQTT::Simple->new('172.23.225.193');
+my $mqtt   = Net::MQTT::Simple->new('172.23.225.193');
+my $retain = 0;
 
 sub parse_content_string {
 	my ($raw_content) = @_;
@@ -24,18 +25,21 @@ sub parse_content_string {
 }
 
 for my $arg (@ARGV) {
-	if (
+	if ( $arg eq '--publish' ) {
+		$retain = 0;
+	}
+	elsif ( $arg eq '--retain' ) {
+		$retain = 1;
+	}
+	elsif (
 		$arg =~ m{ ^ (?<topic> [^=]+) = (?<msgtype> . ) = (?<content> .*) $ }x )
 	{
 		my $content = parse_content_string( $+{content} );
-		if ( $+{msgtype} eq 'm' ) {
-			$mqtt->publish( $+{topic}, $content );
-		}
-		elsif ( $+{msgtype} eq 'r' ) {
+		if ($retain) {
 			$mqtt->retain( $+{topic}, $content );
 		}
 		else {
-			warn "Unsupported message type $+{msgtype} ($arg)\n";
+			$mqtt->publish( $+{topic}, $content );
 		}
 	}
 }
