@@ -32,7 +32,7 @@ for my $arg (@ARGV) {
 		$retain = 1;
 	}
 	elsif (
-		$arg =~ m{ ^ (?<topic> [^=]+) = (?<msgtype> . ) = (?<content> .*) $ }x )
+		$arg =~ m{ ^ (?<topic> [^=]+) = (?<content> .*) $ }x )
 	{
 		my $content = parse_content_string( $+{content} );
 		if ($retain) {
