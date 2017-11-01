@@ -7,9 +7,20 @@ use 5.020;
 our $VERSION = '0.00';
 
 use File::Slurp qw(read_file);
+use Getopt::Long;
 use Net::MQTT::Simple;
 
-my $mqtt   = Net::MQTT::Simple->new('172.23.225.193');
+my $mqtt_host;
+
+GetOptions(
+	'h|host=s' => \$mqtt_host,
+);
+
+if ( not defined $mqtt_host or not length($mqtt_host) ) {
+	die("Usage: $0 -h <hostname> [topic=value ...]\n");
+}
+
+my $mqtt   = Net::MQTT::Simple->new($mqtt_host);
 my $retain = 0;
 
 sub parse_content_string {
@@ -31,9 +42,7 @@ for my $arg (@ARGV) {
 	elsif ( $arg eq '--retain' ) {
 		$retain = 1;
 	}
-	elsif (
-		$arg =~ m{ ^ (?<topic> [^=]+) = (?<content> .*) $ }x )
-	{
+	elsif ( $arg =~ m{ ^ (?<topic> [^=]+) = (?<content> .*) $ }x ) {
 		my $content = parse_content_string( $+{content} );
 		if ($retain) {
 			$mqtt->retain( $+{topic}, $content );
