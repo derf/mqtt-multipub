@@ -9,6 +9,7 @@ our $VERSION = '0.00';
 use File::Slurp qw(read_file);
 use Getopt::Long;
 use Net::MQTT::Simple;
+use Time::HiRes qw(usleep);
 
 my $mqtt_host;
 
@@ -52,6 +53,16 @@ for my $arg (@ARGV) {
 		}
 	}
 }
+
+# XXX Net::MQTT::Simple passes data to the socket layer, but does not wait for
+# it to be successfully sent. So (especially on fast systems, e.g. modern
+# Core i5/i7 CPUs) we might terminate before all data was transmitted, leading
+# to loss of some messages.
+#
+# Fixing this probably requires a dive into Net::MQTT::Simple and possibly
+# changes in its API, so let's dance the workaround dance for now.
+
+usleep(100_000);
 
 __END__
 
