@@ -33,6 +33,8 @@ sub parse_content_string {
 		}
 		return $content;
 	}
+	# Allow //foo as escape for literal /foo messages
+	$raw_content =~ s{ ^ / / }{/}x;
 	return $raw_content;
 }
 
