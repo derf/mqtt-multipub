@@ -15,6 +15,7 @@ my $mqtt_host;
 
 GetOptions(
 	'h|host=s' => \$mqtt_host,
+	'V|version' => sub { say "mqtt-multipub version $VERSION"; exit 0 },
 );
 
 if ( not defined $mqtt_host or not length($mqtt_host) ) {
@@ -131,6 +132,10 @@ character will not be part of the published message.
 =item B<-h>|B<--host> I<hostname>
 
 Connect to I<hostname>. Mandatory.
+
+=item B<-V>|B<--version>
+
+Print mqtt-multipub version.
 
 =back
 
