@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.020;
 
-our $VERSION = '0.00';
+our $VERSION = '0.01';
 
 use File::Slurp qw(read_file);
 use Getopt::Long;
@@ -70,19 +70,73 @@ __END__
 
 =head1 NAME
 
+mqtt-multipub - Publish multiple MQTT messages at once
+
 =head1 SYNOPSIS
+
+B<mqtt-multipub> B<-h|--host> I<hostname> [B<publish>] I<topic>=I<value ...> [B<retain>] I<topic>=I<value ...>
 
 =head1 VERSION
 
+version 0.01
+
 =head1 DESCRIPTION
+
+B<mqtt-multipub> publishes multiple MQTT messages (usually for different
+topics) using a single connection. This makes it faster than a series of
+B<mosquitto_pub> invocations.
+
+Its non-option arguments consist of the I<messages> to publish and the
+B<publish> and B<retain> keywords specifying how exactly the messages should
+be published.
+
+
+=head1 ARGUMENTS
+
+=over
+
+=item B<publish>
+
+All messages specified after B<publish> will be published without retain flag.
+I.e., they will be forwarded to clients subscribed to the topic, but they will
+not be retained for clients subscribing at a later time.
+
+This is the default behaviour.
+
+=item B<retain>
+
+All messages specified after B<retain> will be published and retained on the
+MQTT broker as "last known good" value. So, clients which subscribe at a later
+time will still get the value published this way -- unless it is updated or
+deleted in the meantime.
+
+=item I<topic>=I<value>
+
+Publish (and optionally retain, see above) I<value> as a message for I<topic>.
+
+If I<value> begins with a B</> (slash), it is interpreted as a filename
+and the file content published instead. If the file contains a trailing
+newline character, it will be left out of the message body.
+
+To avoid I<value> being parsed as a filename, prefix it with an additional
+slash character: Use B<//>I<...> instead of B</>I<...>. This additional
+character will not be part of the published message.
+
+=back
 
 =head1 OPTIONS
 
 =over
 
+=item B<-h>|B<--host> I<hostname>
+
+Connect to I<hostname>. Mandatory.
+
 =back
 
 =head1 EXIT STATUS
+
+Zero unless things went wrong.
 
 =head1 CONFIGURATION
 
@@ -92,9 +146,15 @@ None.
 
 =over
 
+=item * File::Slurp
+
+=item * Net::MQTT::Simple
+
 =back
 
 =head1 BUGS AND LIMITATIONS
+
+Probably many.
 
 =head1 AUTHOR
 
@@ -102,4 +162,4 @@ Copyright (C) 2017 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 
-  0. You just DO WHAT THE FUCK YOU WANT TO.
+This software is licensed under the same terms as Perl itself.
