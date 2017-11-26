@@ -14,7 +14,7 @@ use Time::HiRes qw(usleep);
 my $mqtt_host;
 
 GetOptions(
-	'h|host=s' => \$mqtt_host,
+	'h|host=s'  => \$mqtt_host,
 	'V|version' => sub { say "mqtt-multipub version $VERSION"; exit 0 },
 );
 
@@ -34,6 +34,7 @@ sub parse_content_string {
 		}
 		return $content;
 	}
+
 	# Allow //foo as escape for literal /foo messages
 	$raw_content =~ s{ ^ / / }{/}x;
 	return $raw_content;
