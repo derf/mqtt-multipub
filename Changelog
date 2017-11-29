@@ -1,0 +1,4 @@
+mqtt-multipub 0.01 - Wed Nov 29 2017
+
+    * Initial release
+    * Supports publish/retain message types and reading message body from files

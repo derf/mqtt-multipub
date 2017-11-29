@@ -1,0 +1,33 @@
+mqtt-multipub - Publish multiple MQTT messages at once
+------------------------------------------------------
+
+<http://finalrewind.org/projects/mqtt-multipub/>
+
+
+Dependencies
+------------
+
+ * perl version 5.20 or newer
+ * File::Slurp
+ * Net::MQTT::Simple
+
+
+Installation
+------------
+
+From a release tarball:
+
+$ perl Build.PL
+$ ./Build
+$ sudo ./Build install
+
+From git:
+
+$ perl Build.PL
+$ ./Build
+$ ./Build manifest
+$ sudo ./Build install
+
+See also the Module::Build documentation.
+
+You can then run 'man mqtt-multipub' to read the documentation.
